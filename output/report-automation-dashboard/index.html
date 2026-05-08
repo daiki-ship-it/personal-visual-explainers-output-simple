@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta property="og:title" content="仕事コンテキスト反映の報告自動化">
+  <meta property="og:description" content="Goal→実績→Gap→タスク進捗の流れを、毎朝自動でSlackに届ける仕組みを図解します。">
+  <meta property="og:type" content="article">
+  <title>仕事コンテキスト反映の報告自動化</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFFFFF'/><rect x='8' y='8' width='84' height='84' rx='14' fill='none' stroke='%233B82F6' stroke-width='4'/><circle cx='32' cy='40' r='10' fill='%233B82F6' opacity='0.8'/><circle cx='68' cy='40' r='10' fill='%2360A5FA' opacity='0.8'/><rect x='25' y='62' width='50' height='6' rx='3' fill='%2394A3B8' opacity='0.6'/><rect x='30' y='74' width='40' height='6' rx='3' fill='%2394A3B8' opacity='0.3'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ads: {
+              bg: '#FFFFFF',
+              surface: '#F8FAFC',
+              hover: '#F1F5F9',
+              border: '#E2E8F0',
+              accent: '#3B82F6',
+              'accent-light': '#2563EB',
+              text: '#1E293B',
+              muted: '#64748B',
+              dim: '#94A3B8',
+              positive: '#10B981',
+              negative: '#EF4444',
+              warning: '#F59E0B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', '"Hiragino Sans"', '"Hiragino Kaku Gothic ProN"', '"Yu Gothic UI"', '"Meiryo"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { border-top: none !important; }
+      .rounded-xl { break-inside: avoid; }
+      .md\:flex-row { flex-direction: row !important; }
+      .md\:hidden { display: none !important; }
+      .hidden.md\:block { display: block !important; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      .md\:mb-20 { margin-bottom: 5rem !important; }
+      .md\:py-16 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+      .bg-clip-text.text-transparent {
+        -webkit-background-clip: initial !important;
+        background-clip: initial !important;
+        color: #2563EB !important;
+        -webkit-text-fill-color: #2563EB !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-ads-bg text-slate-600 antialiased leading-relaxed border-t-4 border-ads-accent">
+  <div class="no-print max-w-3xl mx-auto px-5 pt-2 flex justify-end">
+    <button onclick="window.print()" class="flex items-center gap-1.5 text-xs text-ads-dim hover:text-ads-accent transition-colors cursor-pointer">
+      <i data-lucide="download" class="w-3.5 h-3.5"></i>
+      PDF
+    </button>
+  </div>
+  <main class="max-w-3xl mx-auto px-5 py-10 md:py-16">
+<!-- CONTENT_START -->
+
+<!-- ============================================================ -->
+<!--  HERO                                                        -->
+<!-- ============================================================ -->
+<div class="text-center mb-8 md:mb-10">
+  <div class="inline-flex items-center gap-2 bg-ads-accent/10 text-ads-accent-light px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+    <i data-lucide="workflow" class="w-4 h-4"></i>
+    仕事の運用
+  </div>
+  <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
+    仕事コンテキスト反映の<br class="md:hidden">
+    <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">報告自動化</span>
+  </h1>
+  <p class="text-lg text-ads-muted max-w-xl mx-auto leading-relaxed">
+    毎朝4時に、自動で「Goal → 実績 → Gap → タスク進捗」の順にレポートを生成して、Slackに通知する。
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!--  ONE-PAGE SUMMARY                                             -->
+<!-- ============================================================ -->
+<div class="bg-ads-surface border border-ads-border rounded-2xl p-6 md:p-10 mb-6">
+  <div class="text-center mb-8 md:mb-10">
+    <p class="text-xl md:text-2xl font-black text-slate-900 mb-2">
+      ひとことで言うと ── <span class="text-ads-accent-light">「目的から始まる」</span> 報告フロー
+    </p>
+    <p class="text-sm text-ads-muted">
+      いまのタスクが「そもそも必要か？」まで、強制的に立ち返れる設計
+    </p>
+  </div>
+
+  <!-- Core flow -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-stretch mb-6">
+    <div class="bg-white border border-ads-border rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+          <i data-lucide="flag" class="w-4.5 h-4.5 text-blue-600"></i>
+        </div>
+        <div class="font-bold text-slate-900 text-sm">Goal</div>
+      </div>
+      <div class="text-xs text-ads-muted leading-relaxed">「どこへ向かうか」を先に確認</div>
+    </div>
+
+    <div class="hidden md:flex items-center justify-center">
+      <i data-lucide="arrow-right" class="w-5 h-5 text-ads-accent"></i>
+    </div>
+
+    <div class="bg-white border border-ads-border rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+          <i data-lucide="check-check" class="w-4.5 h-4.5 text-emerald-600"></i>
+        </div>
+        <div class="font-bold text-slate-900 text-sm">実績</div>
+      </div>
+      <div class="text-xs text-ads-muted leading-relaxed">できたこと・積み上げを見える化</div>
+    </div>
+
+    <div class="hidden md:flex items-center justify-center">
+      <i data-lucide="arrow-right" class="w-5 h-5 text-ads-accent"></i>
+    </div>
+
+    <div class="bg-white border border-ads-border rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+          <i data-lucide="triangle-alert" class="w-4.5 h-4.5 text-amber-600"></i>
+        </div>
+        <div class="font-bold text-slate-900 text-sm">Gap</div>
+      </div>
+      <div class="text-xs text-ads-muted leading-relaxed">「あと何が足りない？」を整理</div>
+    </div>
+  </div>
+
+  <div class="flex justify-center">
+    <div class="flex items-center gap-2 text-xs text-slate-700 bg-white border border-ads-border rounded-full px-4 py-1.5">
+      <i data-lucide="list-checks" class="w-3.5 h-3.5 text-ads-accent-light"></i>
+      最後にタスク一覧（順調 / 注意 / 危険）で「今日の打ち手」を確定
+    </div>
+  </div>
+</div>
+
+<p class="text-center text-ads-muted mb-16 md:mb-20">
+  次に、「どう動いているか（4つのパーツ）」と「実際の画面」を並べて見せます。
+</p>
+
+<!-- ============================================================ -->
+<!--  SECTION: 4 PARTS                                             -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10 flex-shrink-0">
+      <i data-lucide="boxes" class="w-5 h-5 text-blue-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">工夫①：4つのパーツに分解して、詰まらない設計にした</h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-ads-surface border border-ads-border rounded-2xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-9 h-9 rounded-xl bg-slate-900/5 border border-ads-border flex items-center justify-center">
+          <i data-lucide="alarm-clock" class="w-4.5 h-4.5 text-slate-700"></i>
+        </div>
+        <div class="font-black text-slate-900">トリガー（時間）</div>
+      </div>
+      <p class="text-sm text-ads-muted leading-relaxed">
+        毎朝4時に GitHub Actions が起動。<br>
+        「いつ動くか」を固定して、習慣化しやすくする。
+      </p>
+      <div class="mt-3 inline-flex items-center gap-1.5 text-xs text-ads-dim bg-white border border-ads-border rounded-full px-3 py-1">
+        <i data-lucide="clock-3" class="w-3.5 h-3.5"></i>
+        04:00 / daily
+      </div>
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center">
+          <i data-lucide="database" class="w-4.5 h-4.5 text-emerald-600"></i>
+        </div>
+        <div class="font-black text-slate-900">ソース元（2系統）</div>
+      </div>
+      <ul class="text-sm text-ads-muted leading-relaxed list-disc pl-5 space-y-1">
+        <li>Notion：タスク表（今日やることの材料）</li>
+        <li>Git管理：仕事のコンテキスト（Goal / 実績 / Gap）</li>
+      </ul>
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/15 flex items-center justify-center">
+          <i data-lucide="github" class="w-4.5 h-4.5 text-blue-600"></i>
+        </div>
+        <div class="font-black text-slate-900">処理する場所（GitHub）</div>
+      </div>
+      <p class="text-sm text-ads-muted leading-relaxed">
+        データ取得 → レポート生成 → 出力（HTML/画像化など）を一箇所で実行。<br>
+        「処理がどこで起きるか」を迷わなくする。
+      </p>
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/15 flex items-center justify-center">
+          <i data-lucide="message-square" class="w-4.5 h-4.5 text-purple-600"></i>
+        </div>
+        <div class="font-black text-slate-900">通知先（Slack）</div>
+      </div>
+      <p class="text-sm text-ads-muted leading-relaxed">
+        できあがったレポートを Slack に送る。<br>
+        すぐ見られる場所に置いて、行動につなげる。
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-6 bg-white border border-ads-border rounded-2xl p-5">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-ads-accent/10 border border-ads-accent/15 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="route" class="w-5 h-5 text-ads-accent-light"></i>
+      </div>
+      <div class="flex-1">
+        <div class="font-bold text-slate-900 mb-2">全体の流れ</div>
+        <div class="grid grid-cols-1 md:grid-cols-7 items-center gap-2 text-sm">
+          <div class="px-3 py-2 rounded-xl bg-slate-50 border border-ads-border text-slate-700 font-medium flex items-center gap-2">
+            <i data-lucide="alarm-clock" class="w-4 h-4 text-slate-600"></i>
+            トリガー
+          </div>
+          <div class="hidden md:flex justify-center"><i data-lucide="arrow-right" class="w-4.5 h-4.5 text-ads-accent"></i></div>
+          <div class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-500/15 text-slate-700 font-medium flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i>
+            ソース
+          </div>
+          <div class="hidden md:flex justify-center"><i data-lucide="arrow-right" class="w-4.5 h-4.5 text-ads-accent"></i></div>
+          <div class="px-3 py-2 rounded-xl bg-blue-50 border border-blue-500/15 text-slate-700 font-medium flex items-center gap-2">
+            <i data-lucide="github" class="w-4 h-4 text-blue-600"></i>
+            処理
+          </div>
+          <div class="hidden md:flex justify-center"><i data-lucide="arrow-right" class="w-4.5 h-4.5 text-ads-accent"></i></div>
+          <div class="px-3 py-2 rounded-xl bg-purple-50 border border-purple-500/15 text-slate-700 font-medium flex items-center gap-2">
+            <i data-lucide="message-square" class="w-4 h-4 text-purple-600"></i>
+            Slack
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  SECTION: WHY CONTEXT-IN-REPO                                 -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-500/10 flex-shrink-0">
+      <i data-lucide="folder-git-2" class="w-5 h-5 text-emerald-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">工夫②：仕事のコンテキスト直下に組み込んで、「目的に接続された報告」にした</h2>
+  </div>
+
+  <div class="bg-ads-surface border border-ads-border rounded-2xl p-6 md:p-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <div class="font-bold text-slate-900 mb-2">狙い</div>
+        <ul class="text-sm text-ads-muted leading-relaxed list-disc pl-5 space-y-1">
+          <li>Goal・実績・Gapをまとめたレポートを先頭に置く</li>
+          <li>そのあとで「タスクの進行状況」を確認できるようにする</li>
+          <li>タスクはGoal達成のための手段なので、毎回 Goal に立ち返れるようにする</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-bold text-slate-900 mb-2">効果</div>
+        <div class="bg-white border border-ads-border rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-9 h-9 rounded-xl bg-ads-accent/10 border border-ads-accent/15 flex items-center justify-center">
+              <i data-lucide="brain" class="w-4.5 h-4.5 text-ads-accent-light"></i>
+            </div>
+            <div class="font-black text-slate-900">問いが立つ</div>
+          </div>
+          <p class="text-sm text-ads-muted leading-relaxed">
+            最初にGoalを見せることで、<strong class="text-slate-900">「そもそもこの仕事、本当にやる必要ある？」</strong>という思考に自然に入れる。<br>
+            報告が「作業ログ」ではなく「目的からの意思決定」に寄る。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div class="bg-white border border-ads-border rounded-2xl p-4">
+        <div class="text-xs font-bold text-ads-dim mb-1">Step 1</div>
+        <div class="font-bold text-slate-900 text-sm mb-1">Goal確認</div>
+        <div class="text-xs text-ads-muted">「向かう先」から始める</div>
+      </div>
+      <div class="bg-white border border-ads-border rounded-2xl p-4">
+        <div class="text-xs font-bold text-ads-dim mb-1">Step 2</div>
+        <div class="font-bold text-slate-900 text-sm mb-1">実績・Gap</div>
+        <div class="text-xs text-ads-muted">現状とズレを把握</div>
+      </div>
+      <div class="bg-white border border-ads-border rounded-2xl p-4">
+        <div class="text-xs font-bold text-ads-dim mb-1">Step 3</div>
+        <div class="font-bold text-slate-900 text-sm mb-1">タスク状況</div>
+        <div class="text-xs text-ads-muted">危険・注意を早めに検知</div>
+      </div>
+      <div class="bg-white border border-ads-border rounded-2xl p-4">
+        <div class="text-xs font-bold text-ads-dim mb-1">Step 4</div>
+        <div class="font-bold text-slate-900 text-sm mb-1">今日の打ち手</div>
+        <div class="text-xs text-ads-muted">優先度を決めて動く</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  SECTION: SCREENSHOTS                                         -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900/5 flex-shrink-0">
+      <i data-lucide="images" class="w-5 h-5 text-slate-700"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">スクショ（上から順に表示）</h2>
+  </div>
+
+  <div class="space-y-6">
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">01</div>
+            <div class="font-bold text-slate-900">Goal / 実績 / Gap レポート（Goal）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="flag" class="w-3.5 h-3.5"></i>
+            Goalを最初に固定
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/running-report-ss-1.png"
+        alt="Goal / 実績 / Gap レポート（Goal部分）のスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">02</div>
+            <div class="font-bold text-slate-900">数字・期限つきのマイルストーン（実績）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+            時系列で確認
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/running-report-ss-2.png"
+        alt="マイルストーンの実績（時系列）のスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">03</div>
+            <div class="font-bold text-slate-900">Gapメモ（次の打ち手のための材料）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="pencil-line" class="w-3.5 h-3.5"></i>
+            数値はここに書かない
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/running-report-ss-3.png"
+        alt="Gapメモ（手入力）のスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">04</div>
+            <div class="font-bold text-slate-900">タスク一覧（危険・注意・順調）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="siren" class="w-3.5 h-3.5"></i>
+            締切で赤くなる
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/screenshot-1.png"
+        alt="タスク一覧（危険・注意・順調）のスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">05</div>
+            <div class="font-bold text-slate-900">AIからの提案（優先度つき）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            推奨アクション
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/screenshot-2.png"
+        alt="AIからの提案（優先度と推奨アクション）のスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="bg-ads-surface border border-ads-border rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 bg-white border-b border-ads-border">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs text-ads-dim font-medium">06</div>
+            <div class="font-bold text-slate-900">締切カレンダー（未来の詰まりを見える化）</div>
+          </div>
+          <div class="text-xs text-ads-dim inline-flex items-center gap-1.5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            月単位で俯瞰
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/screenshot-3.png"
+        alt="締切カレンダーのスクリーンショット"
+        class="w-full h-auto block"
+        loading="lazy"
+      >
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  CLOSE                                                       -->
+<!-- ============================================================ -->
+<div class="bg-white border border-ads-border rounded-2xl p-6 md:p-8">
+  <div class="flex items-start gap-3">
+    <div class="w-10 h-10 rounded-xl bg-ads-accent/10 border border-ads-accent/15 flex items-center justify-center flex-shrink-0">
+      <i data-lucide="target" class="w-5 h-5 text-ads-accent-light"></i>
+    </div>
+    <div>
+      <div class="font-black text-slate-900 text-lg mb-2">この図解で伝えたいこと</div>
+      <p class="text-sm text-ads-muted leading-relaxed">
+        「報告の自動化」は、手間削減だけじゃなく、<strong class="text-slate-900">判断の質</strong>を上げる道具にもできる。<br>
+        Goalから始める順番にするだけで、タスクが「本当に必要か？」まで問い直せる。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT_END -->
+  </main>
+  <footer class="max-w-3xl mx-auto px-5 pb-10 pt-6 border-t border-ads-border/30">
+    <p class="text-xs text-ads-dim text-center">AI-Driven School の図解ツールで作成</p>
+  </footer>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
+

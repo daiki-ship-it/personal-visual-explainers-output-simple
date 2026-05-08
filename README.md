@@ -11,10 +11,11 @@ personal-visual-explainers/
 ├── .claude/skills/
 │   ├── creating-skills/                  ← スキルの作り方ガイド
 │   └── creating-visual-explainers/       ← 図解を生成するスキル（配布済みの図解ツールと同じもの）
-├── sample/
-│   └── majiai-diagram/                   ← 作成例（本気AIの図解スキル）
-│       ├── .claude/skills/diagram-maji/  ← スキル本体
-│       └── docs/charactor-images/        ← キャラクター画像
+│   └── diagram-partnership-sync/         ← 図解スキル（例：会議サマリー用）
+├── docs/
+│   └── change-history.md                 ← 「誰が・いつ・何を・どのように」を追う手順
+├── scripts/
+│   └── audit.sh                          ← 変更履歴を一覧するコマンド
 ├── output/                               ← 図解の保存先
 ├── .gitignore
 └── README.md                             ← この説明書
@@ -24,18 +25,17 @@ personal-visual-explainers/
 |---------|------|
 | `.claude/skills/creating-skills/` | スキルの作り方ガイド。設計原則・パターン集・チェックリストが入っています |
 | `.claude/skills/creating-visual-explainers/` | 図解HTMLを生成するスキル。配布済みの図解ツールと同じものです |
-| `sample/majiai-diagram/` | 図解の作成例。本気AIが実際に使っている図解スキルの構造がわかります |
+| `.claude/skills/diagram-partnership-sync/` | 図解スキルの例（会議サマリーを1枚にまとめる） |
+| `docs/` | 運用ドキュメント（変更履歴の見方など） |
+| `scripts/` | 補助コマンド（変更履歴の一覧表示など） |
 | `output/` | 生成した図解の保存先 |
 
-## まず作成例を見てみる
+## 変更履歴（誰が・いつ・何を・どのように）
 
-`sample/majiai-diagram/.claude/skills/diagram-maji/` の中にある SKILL.md と references/ フォルダを開いて読んでみてください。
+「誰が・いつ・何を・どのように修正したか」は、Gitの履歴から追えます。
 
-- **SKILL.md** — スキルの全体設計（どんな順番で何をするかのワークフロー）
-- **references/** — デザインガイド、用語辞書、キャラクター設定など
-- **docs/charactor-images/** — 図解に使うキャラクター画像
-
-「スキルの中身はこうなっているんだ」と全体像をつかんでおくと、この後の作業がスムーズです。
+- 手順: `docs/change-history.md`
+- 一覧コマンド: `bash scripts/audit.sh`
 
 ## パーソナル図解スキルの作り方
 

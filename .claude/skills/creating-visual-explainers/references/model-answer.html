@@ -10,7 +10,7 @@
   <meta property="og:description" content="APIの仕組みを、身近な例とビジュアルでわかりやすく図解します。">
   <meta property="og:type" content="article">
   <title>APIの仕組み</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFFFFF'/><rect x='8' y='8' width='84' height='84' rx='14' fill='none' stroke='%233B82F6' stroke-width='4'/><circle cx='32' cy='40' r='10' fill='%233B82F6' opacity='0.8'/><circle cx='68' cy='40' r='10' fill='%2360A5FA' opacity='0.8'/><rect x='25' y='62' width='50' height='6' rx='3' fill='%2394A3B8' opacity='0.6'/><rect x='30' y='74' width='40' height='6' rx='3' fill='%2394A3B8' opacity='0.3'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFFFFF'/><rect x='8' y='8' width='84' height='84' rx='14' fill='none' stroke='%23228FA0' stroke-width='4'/><circle cx='32' cy='40' r='10' fill='%23228FA0' opacity='0.8'/><circle cx='68' cy='40' r='10' fill='%2322A5B4' opacity='0.8'/><rect x='25' y='62' width='50' height='6' rx='3' fill='%235F6B77' opacity='0.6'/><rect x='30' y='74' width='40' height='6' rx='3' fill='%235F6B77' opacity='0.3'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -21,15 +21,15 @@
         extend: {
           colors: {
             ads: {
-              bg: '#FFFFFF',
-              surface: '#F8FAFC',
-              hover: '#F1F5F9',
-              border: '#E2E8F0',
-              accent: '#3B82F6',
-              'accent-light': '#2563EB',
-              text: '#1E293B',
-              muted: '#64748B',
-              dim: '#94A3B8',
+              bg: '#F3FAFC',
+              surface: '#FDFEFE',
+              hover: '#F4F9FA',
+              border: '#D9E5E8',
+              accent: '#228FA0',
+              'accent-light': '#246B89',
+              text: '#224F62',
+              muted: '#2C596D',
+              dim: '#5F6B77',
               positive: '#10B981',
               negative: '#EF4444',
               warning: '#F59E0B',
@@ -57,8 +57,8 @@
       .bg-clip-text.text-transparent {
         -webkit-background-clip: initial !important;
         background-clip: initial !important;
-        color: #2563EB !important;
-        -webkit-text-fill-color: #2563EB !important;
+        color: #246B89 !important;
+        -webkit-text-fill-color: #246B89 !important;
       }
     }
   </style>
@@ -82,7 +82,7 @@
     テクノロジー
   </div>
   <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
-    <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">API</span>の仕組み
+    <span class="bg-gradient-to-r from-[#186995] to-[#22a5b4] bg-clip-text text-transparent">API</span>の仕組み
   </h1>
   <p class="text-lg text-ads-muted max-w-xl mx-auto leading-relaxed">
     「APIって何？」と聞かれて、うまく答えられない。<br>
@@ -108,11 +108,11 @@
   <div class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0 mb-8">
     <!-- App -->
     <div class="flex flex-col items-center w-36 p-3">
-      <div class="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-2.5">
-        <i data-lucide="smartphone" class="w-7 h-7 text-blue-600"></i>
+      <div class="w-14 h-14 rounded-xl bg-ads-accent/10 border border-ads-accent/20 flex items-center justify-center mb-2.5">
+        <i data-lucide="smartphone" class="w-7 h-7 text-ads-accent-light"></i>
       </div>
       <div class="font-bold text-slate-900 text-sm">あなたのアプリ</div>
-      <div class="text-[11px] text-blue-600/70 mt-0.5">「天気を教えて」</div>
+      <div class="text-[11px] text-ads-accent-light/70 mt-0.5">「天気を教えて」</div>
     </div>
 
     <!-- Arrow 1: Request -->
@@ -175,7 +175,7 @@
       天気予報
     </div>
     <div class="flex items-center gap-1.5 bg-white border border-ads-border rounded-full px-3.5 py-1.5 text-xs text-slate-700">
-      <i data-lucide="log-in" class="w-3.5 h-3.5 text-blue-500"></i>
+      <i data-lucide="log-in" class="w-3.5 h-3.5 text-ads-accent"></i>
       Googleログイン
     </div>
     <div class="flex items-center gap-1.5 bg-white border border-ads-border rounded-full px-3.5 py-1.5 text-xs text-slate-700">
@@ -200,8 +200,8 @@
 <!-- ============================================================ -->
 <section class="mb-16 md:mb-20">
   <div class="flex items-center gap-3 mb-8">
-    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10 flex-shrink-0">
-      <i data-lucide="help-circle" class="w-5 h-5 text-blue-600"></i>
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-ads-accent/10 flex-shrink-0">
+      <i data-lucide="help-circle" class="w-5 h-5 text-ads-accent-light"></i>
     </div>
     <h2 class="text-xl md:text-2xl font-bold text-slate-900">そもそもAPIって何？</h2>
   </div>
@@ -224,12 +224,12 @@
 
     <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
       <!-- あなた（お客さん） -->
-      <div class="w-44 bg-blue-500/10 border border-blue-500/20 rounded-xl p-5 text-center">
-        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-3">
-          <i data-lucide="user" class="w-6 h-6 text-blue-600"></i>
+      <div class="w-44 bg-ads-accent/10 border border-ads-accent/20 rounded-xl p-5 text-center">
+        <div class="w-12 h-12 rounded-full bg-ads-accent/20 flex items-center justify-center mx-auto mb-3">
+          <i data-lucide="user" class="w-6 h-6 text-ads-accent-light"></i>
         </div>
-        <div class="font-bold text-blue-700 mb-1">あなた</div>
-        <div class="text-xs text-blue-600/70">お客さん</div>
+        <div class="font-bold text-ads-accent-light mb-1">あなた</div>
+        <div class="text-xs text-ads-accent-light/70">お客さん</div>
         <div class="text-xs text-ads-muted mt-3 bg-slate-100/80 rounded-lg px-3 py-1.5">「パスタください」</div>
       </div>
 
@@ -422,10 +422,10 @@
     <h3 class="text-lg font-bold text-slate-900 text-center mb-8">APIリクエスト〜レスポンスの流れ</h3>
 
     <div class="flex flex-col md:flex-row items-stretch justify-center gap-3 md:gap-0">
-      <div class="flex-1 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-center">
-        <div class="w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">1</div>
-        <i data-lucide="send" class="w-6 h-6 text-blue-600 mx-auto mb-2"></i>
-        <div class="font-bold text-blue-700 text-sm mb-1">リクエスト送信</div>
+      <div class="flex-1 bg-ads-accent/10 border border-ads-accent/20 rounded-xl p-4 text-center">
+        <div class="w-8 h-8 rounded-full bg-ads-hover0 text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">1</div>
+        <i data-lucide="send" class="w-6 h-6 text-ads-accent-light mx-auto mb-2"></i>
+        <div class="font-bold text-ads-accent-light text-sm mb-1">リクエスト送信</div>
         <div class="text-xs text-ads-muted leading-relaxed">あなたのアプリが<br>「こういう情報ください」<br>とAPIに送る</div>
       </div>
 
@@ -478,15 +478,15 @@
       JavaScript — 天気予報APIの呼び出し例
     </div>
     <pre class="bg-slate-950 border border-slate-700/50 border-t-0 rounded-b-xl p-5 overflow-x-auto text-sm leading-loose"><code><span class="text-slate-500">// 1. APIにリクエストを送る（「東京の天気を教えて」と聞く）</span>
-<span class="text-purple-400">const</span> response <span class="text-slate-400">=</span> <span class="text-purple-400">await</span> <span class="text-blue-400">fetch</span>(<span class="text-emerald-400">"https://api.weather.example.com/current?city=tokyo"</span>);
+<span class="text-purple-400">const</span> response <span class="text-slate-400">=</span> <span class="text-purple-400">await</span> <span class="text-ads-accent">fetch</span>(<span class="text-emerald-400">"https://api.weather.example.com/current?city=tokyo"</span>);
 
 <span class="text-slate-500">// 2. レスポンスをJSON形式（データの構造）に変換する</span>
-<span class="text-purple-400">const</span> data <span class="text-slate-400">=</span> <span class="text-purple-400">await</span> response.<span class="text-blue-400">json</span>();
+<span class="text-purple-400">const</span> data <span class="text-slate-400">=</span> <span class="text-purple-400">await</span> response.<span class="text-ads-accent">json</span>();
 
 <span class="text-slate-500">// 3. 必要なデータを取り出して使う</span>
-console.<span class="text-blue-400">log</span>(data.temperature); <span class="text-slate-500">// → "22°C"</span>
-console.<span class="text-blue-400">log</span>(data.condition);   <span class="text-slate-500">// → "晴れ"</span>
-console.<span class="text-blue-400">log</span>(data.humidity);    <span class="text-slate-500">// → "65%"</span></code></pre>
+console.<span class="text-ads-accent">log</span>(data.temperature); <span class="text-slate-500">// → "22°C"</span>
+console.<span class="text-ads-accent">log</span>(data.condition);   <span class="text-slate-500">// → "晴れ"</span>
+console.<span class="text-ads-accent">log</span>(data.humidity);    <span class="text-slate-500">// → "65%"</span></code></pre>
   </div>
 
   <!-- コード解説 -->
@@ -497,7 +497,7 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
     </h4>
     <div class="space-y-4 text-sm">
       <div class="flex items-start gap-3">
-        <span class="text-xs font-mono bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded flex-shrink-0 mt-0.5">1</span>
+        <span class="text-xs font-mono bg-ads-accent/10 text-ads-accent-light px-2 py-0.5 rounded flex-shrink-0 mt-0.5">1</span>
         <span class="leading-relaxed"><code class="text-emerald-700 text-xs bg-slate-100 px-1.5 py-0.5 rounded">fetch()</code> は「指定したURLに問い合わせる」命令。URLの末尾にある <code class="text-emerald-700 text-xs bg-slate-100 px-1.5 py-0.5 rounded">?city=tokyo</code> が「東京の情報が欲しい」というリクエストの中身です。レストランのたとえで言えば「パスタください」にあたる部分。</span>
       </div>
       <div class="flex items-start gap-3">
@@ -532,10 +532,10 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
 
 <span class="text-slate-500"># 返ってくるレスポンス（JSON形式）</span>
 {
-  <span class="text-blue-400">"city"</span>: <span class="text-emerald-400">"東京"</span>,
-  <span class="text-blue-400">"temperature"</span>: <span class="text-amber-400">"22°C"</span>,
-  <span class="text-blue-400">"condition"</span>: <span class="text-emerald-400">"晴れ"</span>,
-  <span class="text-blue-400">"humidity"</span>: <span class="text-amber-400">"65%"</span>
+  <span class="text-ads-accent">"city"</span>: <span class="text-emerald-400">"東京"</span>,
+  <span class="text-ads-accent">"temperature"</span>: <span class="text-amber-400">"22°C"</span>,
+  <span class="text-ads-accent">"condition"</span>: <span class="text-emerald-400">"晴れ"</span>,
+  <span class="text-ads-accent">"humidity"</span>: <span class="text-amber-400">"65%"</span>
 }</code></pre>
   </div>
 
@@ -662,9 +662,9 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
       </div>
       <div class="p-5 pt-4">
         <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
-          <i data-lucide="log-in" class="w-4 h-4 text-blue-600"></i> 「Googleでログイン」ボタン
+          <i data-lucide="log-in" class="w-4 h-4 text-ads-accent-light"></i> 「Googleでログイン」ボタン
         </h3>
-        <div class="text-xs text-blue-600 font-medium mb-1">裏側でAPIがやっていること</div>
+        <div class="text-xs text-ads-accent-light font-medium mb-1">裏側でAPIがやっていること</div>
         <p class="text-sm text-ads-muted leading-relaxed">GoogleのOAuth API（オーオース = 認可の仕組み）に「このユーザーの身元を確認してください」と問い合わせ、認証トークン（本人確認済みの証）を受け取っている</p>
       </div>
     </div>
@@ -694,18 +694,18 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
       <div class="bg-emerald-50/50 p-5">
         <div class="relative bg-emerald-100/80 rounded-lg p-4 h-28 flex flex-col justify-between">
           <div class="flex items-center gap-1.5">
-            <div class="w-4 h-4 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center">
+            <div class="w-4 h-4 rounded-full bg-ads-hover0 border-2 border-white flex items-center justify-center">
               <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
             </div>
-            <span class="text-[10px] text-blue-700 font-medium">現在地</span>
+            <span class="text-[10px] text-ads-accent-light font-medium">現在地</span>
           </div>
-          <div class="border-l-2 border-dashed border-blue-400/60 ml-2 h-6"></div>
+          <div class="border-l-2 border-dashed border-ads-accent/60 ml-2 h-6"></div>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
               <i data-lucide="map-pin" class="w-4 h-4 text-red-500"></i>
               <span class="text-[10px] text-red-700 font-medium">東京駅</span>
             </div>
-            <div class="bg-white rounded-full px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">12分</div>
+            <div class="bg-white rounded-full px-2 py-0.5 text-[10px] font-bold text-ads-accent-light border border-ads-border">12分</div>
           </div>
         </div>
       </div>
@@ -778,8 +778,8 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
     </div>
 
     <div class="flex gap-4 bg-ads-surface border border-ads-border rounded-xl p-5">
-      <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="shield" class="w-5 h-5 text-blue-600"></i>
+      <div class="w-10 h-10 rounded-lg bg-ads-accent/10 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="shield" class="w-5 h-5 text-ads-accent-light"></i>
       </div>
       <div>
         <h3 class="font-bold text-slate-900 mb-2">品質が担保される</h3>
@@ -911,9 +911,9 @@ console.<span class="text-blue-400">log</span>(data.humidity);    <span class="t
   </p>
 
   <div class="space-y-4 mb-10">
-    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 border-l-4 border-l-blue-500">
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 border-l-4 border-l-ads-accent">
       <div class="flex items-start gap-4">
-        <div class="text-2xl font-black text-blue-500 leading-none flex-shrink-0 mt-1">01</div>
+        <div class="text-2xl font-black text-ads-accent leading-none flex-shrink-0 mt-1">01</div>
         <div>
           <h3 class="font-bold text-slate-900 mb-2">APIは「ソフトウェアの窓口」</h3>
           <p class="text-sm text-ads-muted leading-relaxed">

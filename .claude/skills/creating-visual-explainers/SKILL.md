@@ -11,17 +11,24 @@ description: Generates an illustrated HTML page about any topic and deploys it t
 
 - `references/ads-theme.js` — **色の正本（SSOT）**。hex を変えるときはこのファイルだけ編集する
 - `references/base.html` — 図解テンプレート（Tailwind CSS CDN・Lucide Icons CDN・ADS配色を含む「額縁」）
-- `references/model-answer.html` — 模範回答（品質基準・デザインパターンの実例）。base.htmlと同一の額縁を含む完全なHTMLファイル
+- `references/model-answer.html` — 模範回答（品質基準・デザインパターンの実例）。base.htmlと同一の額縁を含む完全なHTMLファイル。widget 未含（デプロイ時に自動注入されるため）
 
 ## ワークフロー
 
 ### Step 0: 前提確認
 
-`references/base.html` が存在するか確認する。
-
-存在しない場合、以下を伝えて終了:
+1. `references/base.html` が存在するか確認する。存在しない場合、以下を伝えて終了:
 
 > テンプレートファイルが見つかりません。スキルのフォルダ構成が壊れている可能性があります。運営に連絡してください。
+
+2. `fb-tool-url.txt` が次のいずれかに存在するか確認する:
+   - このリポジトリのルート直下
+   - `../commenting-visual-explainers-personal/fb-tool-url.txt`
+
+   存在しない場合、以下を伝えて終了:
+
+> FBツールのセットアップがまだ完了していません。
+> 先にチャット欄で「セットアップして」と伝えてください。
 
 ### Step 1: 模範回答の読み込み
 
@@ -106,7 +113,10 @@ bash .claude/skills/creating-visual-explainers/scripts/deploy-diagram.sh output/
 **Windows（PowerShell）で bash が使えない場合:**
 
 ```powershell
-npx --yes surge output/{スラッグ}.html --domain diagram-[スラッグ].surge.sh
+$fbUrl = Get-Content ../commenting-visual-explainers-personal/fb-tool-url.txt
+$apiToken = Get-Content ../commenting-visual-explainers-personal/fb-api-token.txt
+(Get-Content output/{スラッグ}.html -Raw) -replace '</body>', "<script src=`"$fbUrl/widget.js`" data-token=`"$apiToken`"></script></body>" | Set-Content "$env:TEMP\index.html"
+npx --yes surge "$env:TEMP\index.html" --domain diagram-[スラッグ].surge.sh
 ```
 
 スラッグにはトピックに関連する短い英単語を指定する（例: `git-rebase`, `api-basics`）。
@@ -182,7 +192,7 @@ URLで共有したいとき:
 - **絵文字を使わない** — OS依存で表示が変わる。アイコンはLucide Iconsを使う
 - **インタラクティブ要素を入れない** — トグル、フェードイン、アニメーション、フォーム、クリックで開閉する要素は一切禁止
 - **`<style>` タグを追加しない** — スタイリングはTailwind CSSクラスで行う。インラインの `style` 属性も避ける
-- **`<script>` を追加しない** — テンプレートに含まれるもの以外のJavaScriptは禁止
+- **`<script>` を追加しない** — テンプレートに含まれるもの以外のJavaScriptは禁止。widget.js の埋め込みはデプロイスクリプトが自動で行うため、SKILL の範囲外
 - **外部リソースを追加しない** — テンプレートに含まれるCDN以外の外部読み込み（画像URL・フォント・追加CDN）は禁止
 - **テンプレートの額縁構造を変更しない** — `<head>`・CDN読み込み・meta タグはそのまま維持する
 - **PDF印刷で消える表現を使わない** — `bg-clip-text text-transparent` によるグラデーション文字はPDF出力時に透明のまま消える。テンプレートの print CSS でフォールバックを入れているが、グラデーション文字を使った場合はPDF出力で色が単色（`#246B89`）に変わる点を意識すること

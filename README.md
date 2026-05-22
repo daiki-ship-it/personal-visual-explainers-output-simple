@@ -67,10 +67,14 @@ personal-visual-explainers/
 
 手順の詳細は [`docs/ads-theme-ssot.md`](docs/ads-theme-ssot.md)。
 
-## 図解を共有する
+## 図解を共有する（コメント機能付き）
 
-PDF での共有方法や URL での公開方法は、配布済みの図解ツールと同じです。
-図解ツールの README を参照してください。
+デプロイ時に、テキスト選択でコメントできるフィードバック機能（widget）が自動で付きます。
+
+- **初回だけ**: チャット欄で「セットアップして」と伝える（Vercel + Neon Postgres。FB バックエンドは `commenting-visual-explainers-personal/`）
+- **2回目以降**: 「○○を図解して」→ 自動で Surge に公開（`deploy-diagram.sh` が widget を注入）
+
+詳細は [`commenting-visual-explainers-personal/README.md`](../commenting-visual-explainers-personal/README.md) を参照。
 
 ## 困ったとき
 

@@ -27,6 +27,58 @@ else
     DOMAIN="diagram-$(date +%y%m%d%H%M).surge.sh"
 fi
 
+ROOT_DIR="$(cd "$(dirname "$0")/../../../.." && pwd)"
+FB_ROOT="$ROOT_DIR/../commenting-visual-explainers-personal"
+
+resolve_fb_file() {
+    local name="$1"
+    if [ -f "$ROOT_DIR/$name" ]; then
+        echo "$ROOT_DIR/$name"
+        return 0
+    fi
+    if [ -f "$FB_ROOT/$name" ]; then
+        echo "$FB_ROOT/$name"
+        return 0
+    fi
+    return 1
+}
+
+FB_URL_FILE="$(resolve_fb_file fb-tool-url.txt || true)"
+if [ -z "$FB_URL_FILE" ]; then
+    echo -e "${RED}エラー: fb-tool-url.txt が見つかりません${NC}" >&2
+    echo "チャット欄で「セットアップして」と伝えてください。" >&2
+    echo "（FB バックエンド: commenting-visual-explainers-personal/）" >&2
+    exit 1
+fi
+FB_URL=$(cat "$FB_URL_FILE")
+
+FB_TOKEN_FILE="$(resolve_fb_file fb-api-token.txt || true)"
+if [ -z "$FB_TOKEN_FILE" ]; then
+    echo -e "${RED}エラー: fb-api-token.txt が見つかりません${NC}" >&2
+    echo "セットアップが古い可能性があります。チャット欄で「セットアップして」と伝えてください。" >&2
+    exit 1
+fi
+API_TOKEN=$(cat "$FB_TOKEN_FILE")
+
+if [[ ! "$FB_URL" =~ ^https:// ]]; then
+    echo -e "${RED}エラー: fb-tool-url.txt の URL が https:// で始まっていません${NC}" >&2
+    exit 1
+fi
+if [[ "$FB_URL" =~ [\\|\&$'\n'] ]]; then
+    echo -e "${RED}エラー: fb-tool-url.txt に不正な文字が含まれています${NC}" >&2
+    exit 1
+fi
+if [[ "$API_TOKEN" =~ [\\|\&$'\n'\ ] ]]; then
+    echo -e "${RED}エラー: fb-api-token.txt に不正な文字が含まれています${NC}" >&2
+    exit 1
+fi
+
+if ! grep -q '</body>' "$HTML_FILE"; then
+    echo -e "${RED}エラー: $HTML_FILE に </body> タグが見つかりません${NC}" >&2
+    echo "HTML ファイルの構造が壊れている可能性があります。" >&2
+    exit 1
+fi
+
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
@@ -36,7 +88,7 @@ if [[ ! -f "$THEME_JS" ]]; then
     exit 1
 fi
 
-cp "$HTML_FILE" "$TEMP_DIR/index.html"
+sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
 cp "$THEME_JS" "$TEMP_DIR/ads-theme.js"
 printf "User-agent: *\nDisallow: /\n" > "$TEMP_DIR/robots.txt"
 

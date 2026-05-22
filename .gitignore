@@ -1,3 +1,5 @@
 output/*.html
 deploy-history.log
+fb-tool-url.txt
+fb-api-token.txt
 .DS_Store

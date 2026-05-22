@@ -3,12 +3,12 @@
 ## フォルダの場所（2026-05 移行後）
 
 ```
-My tool/
+src/
 ├── personal-visual-explainers-output-simple/  … 図解を作って Surge に載せる
 └── commenting-visual-explainers-personal/              … コメントを預かる（Vercel + Neon）
 ```
 
-コメントツールは、もともと `ADS/ADS-tool/` の下にありましたが、**My tool の直下** に移しました。
+コメントツールは、もともと `ADS/ADS-tool/` の下にありましたが、**src の直下** に移しました。
 
 ## 誰が何をするか
 

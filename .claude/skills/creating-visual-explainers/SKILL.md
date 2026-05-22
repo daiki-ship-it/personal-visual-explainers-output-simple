@@ -9,6 +9,7 @@ description: Generates an illustrated HTML page about any topic and deploys it t
 
 ## 依存
 
+- `references/ads-theme.js` — **色の正本（SSOT）**。hex を変えるときはこのファイルだけ編集する
 - `references/base.html` — 図解テンプレート（Tailwind CSS CDN・Lucide Icons CDN・ADS配色を含む「額縁」）
 - `references/model-answer.html` — 模範回答（品質基準・デザインパターンの実例）。base.htmlと同一の額縁を含む完全なHTMLファイル
 
@@ -71,11 +72,14 @@ Step 3 で収集した情報をもとに、図解HTMLを生成する。検索結
 1. `output/` ディレクトリがなければ作成する
 2. トピックに関連する短い英単語のスラッグを決める（例: `api-basics`, `git-rebase`）
 3. `references/base.html` を `output/{スラッグ}.html` にコピーする
-4. コピーしたファイル内のプレースホルダーをすべて置換する:
+4. `bash scripts/sync-ads-theme.sh` を実行し、`output/ads-theme.js` を SSOT から同期する（リポジトリルートで実行）
+5. コピーしたファイル内のプレースホルダーをすべて置換する:
    - `<!-- TITLE -->` → 図解のタイトル
    - `<!-- DESCRIPTION -->` → 内容を要約した1文
    - `<!-- CONTENT_START -->` 〜 `<!-- CONTENT_END -->` → Step 4で生成したコンテンツ
-5. ファイルを保存する（ブラウザで開くのは Step 6 のデプロイ後に行う。ローカルでは開かない）
+6. ファイルを保存する（ブラウザで開くのは Step 7 のデプロイ後に行う。ローカルでは開かない）
+
+色を変更したときは `references/ads-theme.js` のみ編集 → `sync-ads-theme.sh` → 再デプロイ。HTML 内に hex を直書きしない（タイトルは `ads-title-gradient` クラスを使う）。
 
 ### Step 6: 公開
 

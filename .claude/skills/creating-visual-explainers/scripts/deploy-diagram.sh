@@ -30,7 +30,14 @@ fi
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
+THEME_JS="$(cd "$(dirname "$0")/../references" && pwd)/ads-theme.js"
+if [[ ! -f "$THEME_JS" ]]; then
+    echo -e "${RED}エラー: ads-theme.js（色の正本）が見つかりません: $THEME_JS${NC}" >&2
+    exit 1
+fi
+
 cp "$HTML_FILE" "$TEMP_DIR/index.html"
+cp "$THEME_JS" "$TEMP_DIR/ads-theme.js"
 printf "User-agent: *\nDisallow: /\n" > "$TEMP_DIR/robots.txt"
 
 echo -e "${YELLOW}公開中...${NC}"

@@ -61,6 +61,12 @@ personal-visual-explainers/
 
 生成された図解は `output/` フォルダに保存されます。
 
+## 色の変更（SSOT）
+
+**正本:** `.claude/skills/creating-visual-explainers/references/ads-theme.js`
+
+手順の詳細は [`docs/ads-theme-ssot.md`](docs/ads-theme-ssot.md)。
+
 ## 図解を共有する
 
 PDF での共有方法や URL での公開方法は、配布済みの図解ツールと同じです。

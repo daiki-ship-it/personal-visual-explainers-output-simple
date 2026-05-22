@@ -14,34 +14,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../ads-theme.js"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            ads: {
-              bg: '#F3FAFC',
-              surface: '#FDFEFE',
-              hover: '#F4F9FA',
-              border: '#D9E5E8',
-              accent: '#228FA0',
-              'accent-light': '#246B89',
-              text: '#224F62',
-              muted: '#2C596D',
-              dim: '#5F6B77',
-              positive: '#10B981',
-              negative: '#EF4444',
-              warning: '#F59E0B',
-            }
-          },
-          fontFamily: {
-            sans: ['"Noto Sans JP"', '"Hiragino Sans"', '"Hiragino Kaku Gothic ProN"', '"Yu Gothic UI"', '"Meiryo"', 'sans-serif'],
-          }
-        }
-      }
-    }
+          colors: window.ADS_THEME.colors,
+          fontFamily: window.ADS_THEME.fontFamily,
+        },
+      },
+    };
   </script>
   <style>
+    .ads-title-gradient {
+      background-image: linear-gradient(to right, var(--ads-gradient-from), var(--ads-gradient-to));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
     @media print {
       .no-print { display: none !important; }
       body { border-top: none !important; }
@@ -53,11 +43,12 @@
       .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
       .md\:mb-20 { margin-bottom: 5rem !important; }
       .md\:py-16 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+      .ads-title-gradient,
       .bg-clip-text.text-transparent {
         -webkit-background-clip: initial !important;
         background-clip: initial !important;
-        color: #246B89 !important;
-        -webkit-text-fill-color: #246B89 !important;
+        color: var(--ads-accent-light) !important;
+        -webkit-text-fill-color: var(--ads-accent-light) !important;
       }
     }
   </style>
@@ -82,7 +73,7 @@
   </div>
   <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
     仕事コンテキスト反映の<br class="md:hidden">
-    <span class="bg-gradient-to-r from-[#186995] to-[#22a5b4] bg-clip-text text-transparent">報告自動化</span>
+    <span class="ads-title-gradient">報告自動化</span>
   </h1>
   <p class="text-lg text-ads-muted max-w-xl mx-auto leading-relaxed">
     毎朝4時に、自動で「Goal → 実績 → Gap → タスク進捗」の順にレポートを生成して、Slackに通知する。

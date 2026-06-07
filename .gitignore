@@ -1,4 +1,12 @@
-output/*.html
+# output/ = 完成品の置き場（HTML・画像・テーマ同期コピー）。正本は references/ とスキル。
+output/**/*.html
+output/**/*.png
+output/**/*.jpg
+output/**/*.jpeg
+output/**/*.webp
+output/**/ads-theme.js
+!output/.gitkeep
+
 deploy-history.log
 fb-tool-url.txt
 fb-api-token.txt

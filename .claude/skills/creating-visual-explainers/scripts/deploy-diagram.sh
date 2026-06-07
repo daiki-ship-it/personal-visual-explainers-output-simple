@@ -90,6 +90,10 @@ fi
 
 sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
 cp "$THEME_JS" "$TEMP_DIR/ads-theme.js"
+HTML_DIR="$(cd "$(dirname "$HTML_FILE")" && pwd)"
+for img in "$HTML_DIR"/*.png "$HTML_DIR"/*.jpg "$HTML_DIR"/*.webp; do
+    [[ -f "$img" ]] && cp "$img" "$TEMP_DIR/"
+done
 printf "User-agent: *\nDisallow: /\n" > "$TEMP_DIR/robots.txt"
 
 echo -e "${YELLOW}公開中...${NC}"

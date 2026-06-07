@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/before-shell-guard.sh",
+        "timeout": 10,
+        "failClosed": false
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/after-file-edit-mark-pending.sh",
+        "timeout": 10
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/after-shell-clear-pending.sh",
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/stop-auto-publish.sh",
+        "timeout": 300,
+        "loop_limit": 3
+      }
+    ]
+  }
+}

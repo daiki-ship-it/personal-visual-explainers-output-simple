@@ -79,47 +79,27 @@ Step 3 で収集した情報をもとに、図解HTMLを生成する。検索結
 1. `output/` ディレクトリがなければ作成する
 2. トピックに関連する短い英単語のスラッグを決める（例: `api-basics`, `git-rebase`）
 3. `references/base.html` を `output/{スラッグ}.html` にコピーする
-4. `bash scripts/sync-ads-theme.sh` を実行し、`output/ads-theme.js` を SSOT から同期する（リポジトリルートで実行）
-5. コピーしたファイル内のプレースホルダーをすべて置換する:
+4. コピーしたファイル内のプレースホルダーをすべて置換する:
    - `<!-- TITLE -->` → 図解のタイトル
    - `<!-- DESCRIPTION -->` → 内容を要約した1文
    - `<!-- CONTENT_START -->` 〜 `<!-- CONTENT_END -->` → Step 4で生成したコンテンツ
-6. ファイルを保存する（ブラウザで開くのは Step 7 のデプロイ後に行う。ローカルでは開かない）
+5. ファイルを保存する
 
-色を変更したときは `references/ads-theme.js` のみ編集 → `sync-ads-theme.sh` → 再デプロイ。HTML 内に hex を直書きしない（タイトルは `ads-title-gradient` クラスを使う）。
+色を変更したときは `references/ads-theme.js` のみ編集する。HTML 内に hex を直書きしない（タイトルは `ads-title-gradient` クラスを使う）。
 
-### Step 6: 公開
+### Step 6: 公開（必須・このコマンドのみ）
 
-ファイル保存後、公開する前にまず Node.js の有無を確認する。
-
-```bash
-node --version
-```
-
-バージョン番号が表示された → そのまま「公開の実行」に進む。
-
-`command not found` と表示された → `references/node-install-guide.md` の手順に従ってNode.jsのインストールを案内する。
-
-#### 公開の実行
-
-以下のスクリプトを**実行する**（中身を読む必要はない）。
-
-**macOS / Git Bash（Windows）の場合:**
+HTML 保存後、**必ず**次のコマンドを1回実行する。`sync-ads-theme.sh` や `deploy-diagram.sh` を個別には実行しない。`npx surge` の直叩き、`open output/*.html` によるローカル表示も禁止（Hook がブロックする）。
 
 ```bash
-bash .claude/skills/creating-visual-explainers/scripts/deploy-diagram.sh output/{スラッグ}.html [スラッグ]
+bash scripts/publish-diagram.sh output/{スラッグ}.html {スラッグ}
 ```
 
-**Windows（PowerShell）で bash が使えない場合:**
+このコマンドが内部で行うこと: テーマ同期 → HTML 検証 → FB 注入 → surge 公開 → 公開 URL をブラウザで開く。
 
-```powershell
-$fbUrl = Get-Content ../commenting-visual-explainers-personal/fb-tool-url.txt
-$apiToken = Get-Content ../commenting-visual-explainers-personal/fb-api-token.txt
-(Get-Content output/{スラッグ}.html -Raw) -replace '</body>', "<script src=`"$fbUrl/widget.js`" data-token=`"$apiToken`"></script></body>" | Set-Content "$env:TEMP\index.html"
-npx --yes surge "$env:TEMP\index.html" --domain diagram-[スラッグ].surge.sh
-```
+ユーザーが「デプロイして」と言わなくても、図解作成の完了には公開まで含める。
 
-スラッグにはトピックに関連する短い英単語を指定する（例: `git-rebase`, `api-basics`）。
+公開前に Node.js が必要。`node --version` で `command not found` のときは `references/node-install-guide.md` を案内する。
 
 #### 初回の場合（Surge未登録）
 
@@ -136,10 +116,12 @@ npx --yes surge "$env:TEMP\index.html" --domain diagram-[スラッグ].surge.sh
 
 よくあるエラーと対応:
 
+- **プレースホルダー未置換** — HTML の `<!-- TITLE -->` 等が残っている。置換してから `publish-diagram.sh` を再実行
 - **`npx: command not found`** — Node.js がまだ入っていない。`references/node-install-guide.md` の手順を案内する
-- **`surge: not found` / surge関連エラー** — `npm install -g surge` を実行してから再度試す
 - **認証エラー / `Login required`** — `npx surge login` を実行してメールアドレスとパスワードを入力する
 - **その他** — エラーの内容を読み、「何が問題で」「次に何をすればいいか」を平易に説明する
+
+Agent が `publish-diagram.sh` を忘れた場合、`.cursor/hooks` の stop Hook が終了前に自動公開を試みる。
 
 ### 図解の削除
 

@@ -2,4 +2,6 @@ output/*.html
 deploy-history.log
 fb-tool-url.txt
 fb-api-token.txt
+.cursor/hooks/diagram-pending.json
+.cursor/hooks/last-publish.json
 .DS_Store

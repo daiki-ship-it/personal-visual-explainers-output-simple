@@ -111,7 +111,7 @@ Phase 7のうち **致命的** → 必ず修正、**改善** → 可能な範囲
 ### Phase 9: 保存と公開
 
 1. `output/` に `index.html` 相当の1ファイルを置く（手順は creating-visual-explainers と同じスラッグ運用）。
-2. デプロイする場合 → **実行**: `bash .claude/skills/creating-visual-explainers/scripts/deploy-diagram.sh output/{スラッグ}.html {スラッグ}`
+2. デプロイする場合 → **実行**: `bash scripts/publish-diagram.sh output/{スラッグ}.html {スラッグ}`
 3. 公開しない場合 → ファイルパスを報告し、ブラウザで開ける旨を伝える。
 
 詳細・トラブルシュート → [creating-visual-explainers/SKILL.md](../creating-visual-explainers/SKILL.md) の Step 5〜7

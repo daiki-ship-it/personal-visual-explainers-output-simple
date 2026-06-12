@@ -4,9 +4,8 @@
 
 | ファイル | 用途 | 公開 URL（例） |
 | --- | --- | --- |
-| [`30day-accompaniment-program-unified.html`](30day-accompaniment-program-unified.html) | **一般向け・最新**（統合版） | https://diagram-30day-accompaniment-program-unified.surge.sh |
+| [`30day-accompaniment-program-unified.html`](30day-accompaniment-program-unified.html) | **一般向け・最新**（統合版。涼真さんポータルも同 URL） | https://diagram-30day-accompaniment-program-unified.surge.sh |
 | [`30day-accompaniment-program-premise-background.html`](30day-accompaniment-program-premise-background.html) | 前提背景（別ページ） | https://diagram-30day-accompaniment-program-premise-background.surge.sh |
-| [`ryoma-30day-accompaniment-2026-06-04.html`](ryoma-30day-accompaniment-2026-06-04.html) | **涼真さん向け**（6/4 MTG 用・維持） | https://diagram-ryoma-30day-accompaniment-2026-06-04.surge.sh |
 
 編集の正本は [`Context/ai-business/deliverables/`](../../Context/ai-business/deliverables/)（Context リポジトリ）。変更後はここへ同期してから `scripts/publish-diagram.sh` で公開。
 

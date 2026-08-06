@@ -43,34 +43,47 @@ resolve_fb_file() {
     return 1
 }
 
+load_surge_credentials() {
+    if [ -z "${SURGE_LOGIN:-}" ]; then
+        local login_file
+        login_file="$(resolve_fb_file surge-login.txt || true)"
+        [ -n "$login_file" ] && SURGE_LOGIN="$(tr -d '[:space:]' < "$login_file")"
+    fi
+    if [ -z "${SURGE_TOKEN:-}" ]; then
+        local token_file
+        token_file="$(resolve_fb_file surge-token.txt || true)"
+        [ -n "$token_file" ] && SURGE_TOKEN="$(tr -d '[:space:]' < "$token_file")"
+    fi
+    if [ -n "${SURGE_LOGIN:-}" ] && [ -n "${SURGE_TOKEN:-}" ]; then
+        export SURGE_LOGIN SURGE_TOKEN
+        return 0
+    fi
+    return 1
+}
+
 FB_URL_FILE="$(resolve_fb_file fb-tool-url.txt || true)"
-if [ -z "$FB_URL_FILE" ]; then
-    echo -e "${RED}エラー: fb-tool-url.txt が見つかりません${NC}" >&2
-    echo "チャット欄で「セットアップして」と伝えてください。" >&2
-    echo "（FB バックエンド: commenting-visual-explainers-personal/）" >&2
-    exit 1
-fi
-FB_URL=$(cat "$FB_URL_FILE")
-
 FB_TOKEN_FILE="$(resolve_fb_file fb-api-token.txt || true)"
-if [ -z "$FB_TOKEN_FILE" ]; then
-    echo -e "${RED}エラー: fb-api-token.txt が見つかりません${NC}" >&2
-    echo "セットアップが古い可能性があります。チャット欄で「セットアップして」と伝えてください。" >&2
-    exit 1
-fi
-API_TOKEN=$(cat "$FB_TOKEN_FILE")
 
-if [[ ! "$FB_URL" =~ ^https:// ]]; then
-    echo -e "${RED}エラー: fb-tool-url.txt の URL が https:// で始まっていません${NC}" >&2
-    exit 1
-fi
-if [[ "$FB_URL" =~ [\\|\&$'\n'] ]]; then
-    echo -e "${RED}エラー: fb-tool-url.txt に不正な文字が含まれています${NC}" >&2
-    exit 1
-fi
-if [[ "$API_TOKEN" =~ [\\|\&$'\n'\ ] ]]; then
-    echo -e "${RED}エラー: fb-api-token.txt に不正な文字が含まれています${NC}" >&2
-    exit 1
+if [ -n "$FB_URL_FILE" ] && [ -n "$FB_TOKEN_FILE" ]; then
+    FB_URL=$(cat "$FB_URL_FILE")
+    API_TOKEN=$(cat "$FB_TOKEN_FILE")
+
+    if [[ ! "$FB_URL" =~ ^https:// ]]; then
+        echo -e "${RED}エラー: fb-tool-url.txt の URL が https:// で始まっていません${NC}" >&2
+        exit 1
+    fi
+    if [[ "$FB_URL" =~ [\\|\&$'\n'] ]]; then
+        echo -e "${RED}エラー: fb-tool-url.txt に不正な文字が含まれています${NC}" >&2
+        exit 1
+    fi
+    if [[ "$API_TOKEN" =~ [\\|\&$'\n'\ ] ]]; then
+        echo -e "${RED}エラー: fb-api-token.txt に不正な文字が含まれています${NC}" >&2
+        exit 1
+    fi
+    INJECT_FB=1
+else
+    echo -e "${YELLOW}FBツール未設定のため、コメント機能なしで公開します${NC}"
+    INJECT_FB=0
 fi
 
 if ! grep -q '</body>' "$HTML_FILE"; then
@@ -88,7 +101,11 @@ if [[ ! -f "$THEME_JS" ]]; then
     exit 1
 fi
 
-sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
+if [ "$INJECT_FB" -eq 1 ]; then
+    sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
+else
+    cp "$HTML_FILE" "$TEMP_DIR/index.html"
+fi
 cp "$THEME_JS" "$TEMP_DIR/ads-theme.js"
 HTML_DIR="$(cd "$(dirname "$HTML_FILE")" && pwd)"
 for img in "$HTML_DIR"/*.png "$HTML_DIR"/*.jpg "$HTML_DIR"/*.webp; do
@@ -96,8 +113,20 @@ for img in "$HTML_DIR"/*.png "$HTML_DIR"/*.jpg "$HTML_DIR"/*.webp; do
 done
 printf "User-agent: *\nDisallow: /\n" > "$TEMP_DIR/robots.txt"
 
+if ! load_surge_credentials; then
+    if [ ! -t 0 ]; then
+        echo -e "${RED}エラー: Surge のログイン情報がありません${NC}" >&2
+        echo "Cloud Agent では環境変数 SURGE_LOGIN / SURGE_TOKEN、または surge-login.txt / surge-token.txt が必要です。" >&2
+        echo "ローカルでは npx surge login を一度実行してください。" >&2
+        exit 1
+    fi
+fi
+
 echo -e "${YELLOW}公開中...${NC}"
-npx --yes surge "$TEMP_DIR" --domain "$DOMAIN"
+if ! npx --yes surge "$TEMP_DIR" --domain "$DOMAIN"; then
+    echo -e "${RED}エラー: Surge への公開に失敗しました${NC}" >&2
+    exit 1
+fi
 
 touch deploy-history.log
 echo "$(date '+%Y-%m-%d %H:%M:%S') | https://${DOMAIN}" >> deploy-history.log

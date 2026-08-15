@@ -13,3 +13,13 @@ fb-api-token.txt
 .cursor/hooks/diagram-pending.json
 .cursor/hooks/last-publish.json
 .DS_Store
+
+# 音声図解コメントツール（tools/ に組み込み）
+tools/voice-diagram-comment/node_modules/
+tools/voice-diagram-comment/.next/
+tools/voice-diagram-comment/.vercel/
+tools/voice-diagram-comment/.env*
+!tools/voice-diagram-comment/.env.example
+tools/voice-diagram-comment/fb-tool-url.txt
+tools/voice-diagram-comment/fb-api-token.txt
+tools/voice-diagram-comment/output/*.html

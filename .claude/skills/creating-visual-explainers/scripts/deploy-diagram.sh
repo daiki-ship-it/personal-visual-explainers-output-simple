@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e
 
-HTML_FILE="${1:?使い方: deploy-diagram.sh <HTMLファイル> [スラッグ]}"
+HTML_FILE="${1:?使い方: deploy-diagram.sh <HTMLファイル> [スラッグ] [--no-comments]}"
 SLUG="${2:-}"
+NO_COMMENTS_FLAG="${NO_COMMENTS:-0}"
+NO_COMMENTS=0
+if [[ "${3:-}" == "--no-comments" || "$NO_COMMENTS_FLAG" == "1" ]]; then
+    NO_COMMENTS=1
+fi
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -28,12 +33,17 @@ else
 fi
 
 ROOT_DIR="$(cd "$(dirname "$0")/../../../.." && pwd)"
+VOICE_ROOT="$ROOT_DIR/tools/voice-diagram-comment"
 FB_ROOT="$ROOT_DIR/../commenting-visual-explainers-personal"
 
 resolve_fb_file() {
     local name="$1"
     if [ -f "$ROOT_DIR/$name" ]; then
         echo "$ROOT_DIR/$name"
+        return 0
+    fi
+    if [ -f "$VOICE_ROOT/$name" ]; then
+        echo "$VOICE_ROOT/$name"
         return 0
     fi
     if [ -f "$FB_ROOT/$name" ]; then
@@ -44,10 +54,11 @@ resolve_fb_file() {
 }
 
 FB_URL_FILE="$(resolve_fb_file fb-tool-url.txt || true)"
+if [[ "$NO_COMMENTS" != 1 ]]; then
 if [ -z "$FB_URL_FILE" ]; then
     echo -e "${RED}エラー: fb-tool-url.txt が見つかりません${NC}" >&2
     echo "チャット欄で「セットアップして」と伝えてください。" >&2
-    echo "（FB バックエンド: commenting-visual-explainers-personal/）" >&2
+    echo "（音声コメント: tools/voice-diagram-comment/ 。チャット欄で「セットアップして」）" >&2
     exit 1
 fi
 FB_URL=$(cat "$FB_URL_FILE")
@@ -72,6 +83,7 @@ if [[ "$API_TOKEN" =~ [\\|\&$'\n'\ ] ]]; then
     echo -e "${RED}エラー: fb-api-token.txt に不正な文字が含まれています${NC}" >&2
     exit 1
 fi
+fi
 
 if ! grep -q '</body>' "$HTML_FILE"; then
     echo -e "${RED}エラー: $HTML_FILE に </body> タグが見つかりません${NC}" >&2
@@ -88,12 +100,18 @@ if [[ ! -f "$THEME_JS" ]]; then
     exit 1
 fi
 
-sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
+if [[ "$NO_COMMENTS" == 1 ]]; then
+    cp "$HTML_FILE" "$TEMP_DIR/index.html"
+else
+    sed "s|</body>|<script src=\"${FB_URL}/widget.js\" data-token=\"${API_TOKEN}\"></script></body>|" "$HTML_FILE" > "$TEMP_DIR/index.html"
+fi
 cp "$THEME_JS" "$TEMP_DIR/ads-theme.js"
 HTML_DIR="$(cd "$(dirname "$HTML_FILE")" && pwd)"
-for img in "$HTML_DIR"/*.png "$HTML_DIR"/*.jpg "$HTML_DIR"/*.webp; do
-    [[ -f "$img" ]] && cp "$img" "$TEMP_DIR/"
-done
+while IFS= read -r asset; do
+    [[ -n "$asset" && -f "$HTML_DIR/$asset" ]] && cp "$HTML_DIR/$asset" "$TEMP_DIR/"
+done < <(grep -oE '(src|href)="[^"]+"' "$HTML_FILE" \
+    | sed -E 's/^(src|href)="([^"]+)".*/\2/' \
+    | grep -vE '^(https?:|//|data:|#)' || true)
 printf "User-agent: *\nDisallow: /\n" > "$TEMP_DIR/robots.txt"
 
 echo -e "${YELLOW}公開中...${NC}"

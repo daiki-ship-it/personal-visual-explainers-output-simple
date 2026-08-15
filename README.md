@@ -69,12 +69,12 @@ personal-visual-explainers/
 
 ## 図解を共有する（コメント機能付き）
 
-デプロイ時に、テキスト選択でコメントできるフィードバック機能（widget）が自動で付きます。
+デプロイ時に、テキスト選択・ピン・音声でコメントできる機能（widget）が自動で付きます。
 
-- **初回だけ**: チャット欄で「セットアップして」と伝える（Vercel + Neon Postgres。FB バックエンドは `commenting-visual-explainers-personal/`）
+- **初回だけ**: チャット欄で「セットアップして」と伝える（Vercel + Neon + Gemini。本体は `tools/voice-diagram-comment/`）
 - **2回目以降**: 「○○を図解して」→ 自動で Surge に公開（`deploy-diagram.sh` が widget を注入）
 
-詳細は [`commenting-visual-explainers-personal/README.md`](../commenting-visual-explainers-personal/README.md) を参照。
+詳細は [`tools/voice-diagram-comment/README.md`](tools/voice-diagram-comment/README.md) を参照。
 
 ## 困ったとき
 

@@ -1,6 +1,6 @@
 ---
 name: setup-fb-tool
-description: 図解コメントツールのセットアップを対話的にガイドするスキル。「FBツールをセットアップして」「フィードバック機能を設定して」「FBツールを使えるようにして」「セットアップして」と依頼された際に使用する。
+description: 旧図解コメントツール（commenting-visual-explainers-personal、テキストコメントのみ）のセットアップをガイドする。「旧FBツールをセットアップして」と依頼された際に使用する。音声コメント込みのセットアップは setting-up-comment-tool を使う。
 ---
 
 # Setup FB Tool

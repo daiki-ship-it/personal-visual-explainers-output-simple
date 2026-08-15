@@ -23,11 +23,12 @@ description: Generates an illustrated HTML page about any topic and deploys it t
 
 2. `fb-tool-url.txt` が次のいずれかに存在するか確認する:
    - このリポジトリのルート直下
-   - `../commenting-visual-explainers-personal/fb-tool-url.txt`
+   - `tools/voice-diagram-comment/fb-tool-url.txt`
+   - `../commenting-visual-explainers-personal/fb-tool-url.txt`（旧コメントツール）
 
    存在しない場合、以下を伝えて終了:
 
-> FBツールのセットアップがまだ完了していません。
+> 音声図解コメントツールのセットアップがまだ完了していません。
 > 先にチャット欄で「セットアップして」と伝えてください。
 
 ### Step 1: 模範回答の読み込み

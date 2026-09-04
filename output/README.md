@@ -7,7 +7,7 @@
 | [`30day-accompaniment-program-unified.html`](30day-accompaniment-program-unified.html) | **一般向け・最新**（統合版。涼真さんポータルも同 URL） | https://diagram-30day-accompaniment-program-unified.surge.sh |
 | [`30day-accompaniment-program-premise-background.html`](30day-accompaniment-program-premise-background.html) | 前提背景（別ページ） | https://diagram-30day-accompaniment-program-premise-background.surge.sh |
 
-編集の正本は [`Context/ai-business/deliverables/`](../../Context/ai-business/deliverables/)（Context リポジトリ）。変更後はここへ同期してから `scripts/publish-diagram.sh` で公開。
+編集の正本は [`Context/ai-business/program/`](../../Context/ai-business/program/)（Context リポジトリ）。**push すると GitHub Actions が自動で Surge 公開**（手動コピー不要）。
 
 ## アーカイブ
 

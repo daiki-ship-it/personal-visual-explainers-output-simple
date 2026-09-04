@@ -4,6 +4,6 @@
 
 | ファイル | 理由 |
 | --- | --- |
-| [`30day-accompaniment-program.html`](30day-accompaniment-program.html) | 5 ステップ版。後継は [`../30day-accompaniment-program-unified.html`](../30day-accompaniment-program-unified.html)（Context 正本: `Context/ai-business/deliverables/`） |
+| [`30day-accompaniment-program.html`](30day-accompaniment-program.html) | 5 ステップ版。後継は [`../30day-accompaniment-program-unified.html`](../30day-accompaniment-program-unified.html)（Context 正本: `Context/ai-business/program/`） |
 
 **削除済み（旧ドラフト）:** `30day-accompaniment-program-premise-a.html` — 統合版・前提背景図解に置き換え済みのため削除。
